@@ -50,19 +50,28 @@ def export_ply(pc, filename):
 #     ply_data_dir: ply文件的存放路径
 #     off_data_dir: off文件的存放地址
 def write_ply_points_only_from_off(ply_data_dir, off_data_dir):
-    cat = os.listdir(off_data_dir)
-    # For every category
+    cat = os.listdir(off_data_dir) # list of categories, (e.g. airplane, bathtub, ...)
+    # for every category
     for i in range(len(cat)):
         print('writing ', i+1, '/', len(cat), ':', cat[i])
-
-        filename = os.path.join(off_data_dir, cat[i])
-        cat_2 = os.listdir(off_data_dir)
-        out = os.path.join(
-            ply_data_dir, 
-            f'{os.path.splitext(cat[i])[0]}.ply'
-        )
-        points, faces = read_off(filename)
-        export_ply(points,out)
+        catname = os.path.join(off_data_dir, cat[i]) # e.g. ModelNet40/airplane
+        cat_2 = os.listdir(off_data_dir) # list of folders (train / test)
+        
+        # for either `train` or `test` folder
+        for j in range(len(cat_2)):
+            foldername = os.path.join(catname, cat_2[j]) # e.g. ModelNet40/airplane/train
+            items = os.listdir(off_data_dir) # list of items (airplane_0001.off)
+            
+            # for every item (.off file)
+            for k in range(len(items)):
+                filename = os.path.join(foldername, items[k]) # e.g. ModelNet40/airplane/train/airplane_0001.off
+                out = os.path.join(
+                    # ply_data_dir, 
+                    foldername, 
+                    f'{os.path.splitext(items[k])[0]}.ply'
+                )
+                points, faces = read_off(filename)
+                export_ply(points,out)
 
 # 功能：把点云信息写入ply文件，包括points和faces
 # 输入：
