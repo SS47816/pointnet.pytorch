@@ -166,17 +166,17 @@ print("final accuracy {}".format(total_correct / float(total_testset)))
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1)
-fig.suptitle('PointNet Training Results')
+fig.suptitle('PointNet Training/Testing Results on ModelNet40')
 
-ax1.plot(train_epoch, train_loss, 'g.-')
-ax1.plot(train_epoch, test_loss, 'y.-')
+ax1.plot(train_epoch, train_loss, 'y.-')
+ax1.plot(train_epoch, test_loss, 'r.-')
 ax1.set_xlabel('Epoch')
 ax1.set_ylabel('Loss')
 ax1.grid()
 ax1.legend(loc='upper left')
 
-ax2.plot(train_epoch, train_accuracy, 'g.-')
-ax2.plot(train_epoch, test_accuracy, 'y.-')
+ax2.plot(train_epoch, train_accuracy, 'y.-')
+ax2.plot(train_epoch, test_accuracy, 'r.-')
 ax2.set_xlabel('Epoch')
 ax2.set_ylabel('Accuracy')
 ax2.grid()
