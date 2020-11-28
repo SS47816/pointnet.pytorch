@@ -11,6 +11,8 @@ from pointnet.dataset import ShapeNetDataset, ModelNetDataset
 from pointnet.model import PointNetCls, feature_transform_regularizer
 import torch.nn.functional as F
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 parser = argparse.ArgumentParser()
@@ -98,6 +100,14 @@ classifier.cuda()
 
 num_batch = len(dataset) / opt.batchSize
 
+# List of values to record
+current_epoch = 0
+train_epoch = np.arange(opt.nepoch)
+train_loss = np.zeros(opt.nepoch)
+train_accuracy = np.zeros(opt.nepoch)
+test_loss = np.zeros(opt.nepoch)
+test_accuracy = np.zeros(opt.nepoch)
+
 for epoch in range(opt.nepoch):
     scheduler.step()
     for i, data in enumerate(dataloader, 0):
@@ -116,6 +126,9 @@ for epoch in range(opt.nepoch):
         pred_choice = pred.data.max(1)[1]
         correct = pred_choice.eq(target.data).cpu().sum()
         print('[%d: %d/%d] train loss: %f accuracy: %f' % (epoch, i, num_batch, loss.item(), correct.item() / float(opt.batchSize)))
+        train_loss[current_epoch] = loss.item()
+        train_accuracy[current_epoch] = correct.item() / float(opt.batchSize)
+
 
         if i % 10 == 0:
             j, data = next(enumerate(testdataloader, 0))
@@ -129,8 +142,11 @@ for epoch in range(opt.nepoch):
             pred_choice = pred.data.max(1)[1]
             correct = pred_choice.eq(target.data).cpu().sum()
             print('[%d: %d/%d] %s loss: %f accuracy: %f' % (epoch, i, num_batch, blue('test'), loss.item(), correct.item()/float(opt.batchSize)))
+            test_loss[current_epoch] = loss.item()
+            test_accuracy[current_epoch] = correct.item() / float(opt.batchSize)
 
     torch.save(classifier.state_dict(), '%s/cls_model_%d.pth' % (opt.outf, epoch))
+    current_epoch = current_epoch + 1
 
 total_correct = 0
 total_testset = 0
@@ -147,3 +163,25 @@ for i,data in tqdm(enumerate(testdataloader, 0)):
     total_testset += points.size()[0]
 
 print("final accuracy {}".format(total_correct / float(total_testset)))
+
+
+fig, (ax1, ax2) = plt.subplots(2, 1)
+fig.suptitle('PointNet Training Results')
+
+ax1.plot(train_epoch, train_loss, 'g.-')
+ax1.plot(train_epoch, test_loss, 'y.-')
+ax1.set_xlabel('Epoch')
+ax1.set_ylabel('Loss')
+ax1.grid()
+ax1.legend(loc='upper left')
+
+ax2.plot(train_epoch, train_accuracy, 'g.-')
+ax2.plot(train_epoch, test_accuracy, 'y.-')
+ax2.set_xlabel('Epoch')
+ax2.set_ylabel('Accuracy')
+ax2.grid()
+ax1.legend(loc='upper left')
+
+plt.show()
+fig.savefig(str(opt.nepoch) + "epoch.png")
+print("Plot saved to " + str(opt.nepoch) + "epoch.png")
