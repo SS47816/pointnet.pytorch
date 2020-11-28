@@ -3,6 +3,7 @@ import argparse
 import os
 import random
 import torch
+torch.cuda.current_device()
 import torch.nn.parallel
 import torch.optim as optim
 import torch.utils.data
