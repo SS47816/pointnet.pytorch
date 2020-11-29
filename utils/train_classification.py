@@ -180,5 +180,6 @@ ax2.set_ylabel('Accuracy')
 ax2.grid()
 
 plt.show()
-fig.savefig(str(opt.nepoch) + "epoch.png")
-print("Plot saved to " + str(opt.nepoch) + "epoch.png")
+fig_path = "../misc/" + str(opt.nepoch) + "epoch.png"
+fig.savefig(fig_path)
+print("Plot saved to " + fig_path)

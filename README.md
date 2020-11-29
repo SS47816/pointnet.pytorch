@@ -33,19 +33,19 @@ Use `--feature_transform` to use feature transform.
 
 On ModelNet40:
 
-|  | Overall Acc | 
-| :---: | :---: | 
-| Original implementation | 89.2 | 
-| this implementation(w/o feature transform) | 86.4 | 
-| this implementation(w/ feature transform) | 87.0 | 
+|  | Overall Acc |
+| :---: | :---: |
+| Original implementation | 89.2 |
+| this implementation(w/o feature transform) | 86.4 |
+| this implementation(w/ feature transform) | 87.0 |
 
 On [A subset of shapenet](http://web.stanford.edu/~ericyi/project_page/part_annotation/index.html)
 
-|  | Overall Acc | 
-| :---: | :---: | 
-| Original implementation | N/A | 
-| this implementation(w/o feature transform) | 98.1 | 
-| this implementation(w/ feature transform) | 97.7 | 
+|  | Overall Acc |
+| :---: | :---: |
+| Original implementation | N/A |
+| this implementation(w/o feature transform) | 98.1 |
+| this implementation(w/ feature transform) | 97.7 |
 
 ## Segmentation performance
 
@@ -66,3 +66,73 @@ Sample segmentation result:
 
 - [Project Page](http://stanford.edu/~rqi/pointnet/)
 - [Tensorflow implementation](https://github.com/charlesq34/pointnet)
+
+
+
+---
+
+> by: SS47816
+
+
+
+
+## Modifications
+
+The following changes have been made to train on ModelNet40:
+1. Fixed CUDA issue with GPU by adding the following in `train_classification.py`:
+    ```python
+    import torch
+    torch.cuda.current_device()
+    ```
+
+2. Added `pointnet.yml` file which contains the conda env I used
+
+3. Added  `off_to_ply.py` to convert ModelNet40 dataset from `.off` files to `.ply` files
+
+4. Added a list of `.txt` files to split the dataset for training/testing under `utils/modelnet40_txts/` directory:
+
+5. In `train_classification.py`, added records for train/test loss & accuracy during the training, and plotted the results
+
+6. Lowered the Adam learning rate `lr` in `train_classification.py` from `1e-3` to `1e-4`
+
+
+
+## Train on ModelNet40
+
+### System Setup
+
+* GTX 1070Ti
+* Nvidia Driver 455.23.04
+* CUDA 10.2
+
+
+
+1. Create a new Conda env `pointnet` by:
+
+   ```bash
+   conda env create --file pointnet.yml
+   
+   conda activate pointnet
+   ```
+
+   **Note:** Though the original author built the model with Pytorch 1.0, it has been tested working in this Conda env with Pytorch 1.7
+
+2. Download and Unzip the ModelNet40 Dataset to a location (denoted as `<path-to-ModelNet40>`)
+
+3. Convert ModelNet40 Dataset from `.off` to `.ply` file format:
+
+   ```bash
+   cd utils
+   python3 off_to_ply.py -i <path-to-ModelNet40> -o <path-to-ModelNet40>
+   ```
+
+4. Copy the 4 `.txt` files in `utils/modelnet40_txts/` to the `<path-to-ModelNet40>` directory
+
+5. Start training (here are the params I am using):
+
+   ```bash
+   python3 train_classification.py --dataset <path-to-ModelNet40> --batchSize 32 --nepoch 300 --dataset_type modelnet40 --feature_transform
+   ```
+
+   
+
