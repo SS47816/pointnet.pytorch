@@ -107,7 +107,22 @@ The following changes have been made to train on ModelNet40:
 
 
 
-1. Create a new Conda env `pointnet` by:
+1. Follow the Author's original steps 
+
+   ```bash
+   git clone https://github.com/fxia22/pointnet.pytorch
+   cd pointnet.pytorch
+   
+   # install pointnet package
+   pip install -e .
+   
+   # download and build the visualization tool
+   cd script
+   bash build.sh #build C++ code for visualization
+   bash download.sh #download dataset
+   ```
+
+2. Create a new Conda env `pointnet` by:
 
    ```bash
    conda env create --file pointnet.yml
@@ -117,18 +132,18 @@ The following changes have been made to train on ModelNet40:
 
    **Note:** Though the original author built the model with Pytorch 1.0, it has been tested working in this Conda env with Pytorch 1.7
 
-2. Download and Unzip the ModelNet40 Dataset to a location (denoted as `<path-to-ModelNet40>`)
+3. Download and Unzip the ModelNet40 Dataset to a location (denoted as `<path-to-ModelNet40>`)
 
-3. Convert ModelNet40 Dataset from `.off` to `.ply` file format:
+4. Convert ModelNet40 Dataset from `.off` to `.ply` file format:
 
    ```bash
    cd utils
    python3 off_to_ply.py -i <path-to-ModelNet40> -o <path-to-ModelNet40>
    ```
 
-4. Copy the 4 `.txt` files in `utils/modelnet40_txts/` to the `<path-to-ModelNet40>` directory
+5. Copy the 4 `.txt` files in `utils/modelnet40_txts/` to the `<path-to-ModelNet40>` directory
 
-5. Start training (here are the params I am using):
+6. Start training (here are the params I am using):
 
    ```bash
    python3 train_classification.py --dataset <path-to-ModelNet40> --batchSize 32 --nepoch 300 --dataset_type modelnet40 --feature_transform
