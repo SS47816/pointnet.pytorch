@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     '--batchSize', type=int, default=32, help='input batch size')
 parser.add_argument(
-    '--num_points', type=int, default=2500, help='input batch size')
+    '--num_points', type=int, default=2500, help='number of points')
 parser.add_argument(
     '--workers', type=int, help='number of data loading workers', default=4)
 parser.add_argument(
@@ -94,7 +94,7 @@ if opt.model != '':
     classifier.load_state_dict(torch.load(opt.model))
 
 
-optimizer = optim.Adam(classifier.parameters(), lr=0.001, betas=(0.9, 0.999))
+optimizer = optim.Adam(classifier.parameters(), lr=0.0001, betas=(0.9, 0.999))
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 classifier.cuda()
 
@@ -170,17 +170,14 @@ fig.suptitle('PointNet Training/Testing Results on ModelNet40')
 
 ax1.plot(train_epoch, train_loss, 'y.-')
 ax1.plot(train_epoch, test_loss, 'r.-')
-ax1.set_xlabel('Epoch')
 ax1.set_ylabel('Loss')
 ax1.grid()
-ax1.legend(loc='upper left')
 
 ax2.plot(train_epoch, train_accuracy, 'y.-')
 ax2.plot(train_epoch, test_accuracy, 'r.-')
 ax2.set_xlabel('Epoch')
 ax2.set_ylabel('Accuracy')
 ax2.grid()
-ax1.legend(loc='upper left')
 
 plt.show()
 fig.savefig(str(opt.nepoch) + "epoch.png")
